@@ -5,7 +5,8 @@
   Cun un terzo Browser impostati come Sede<br>
 </p>
 <p>
-  Dai Browser filiale, clicca <i><b>richiedi approvazione</b></i> per inviare richieste alla Sede<br>
+  Dai Browser filiale, clicca <i><b>richiedi approvazione Preventivo</b></i> o <i><b>richiedi approvazione
+      Contratto</b></i> per inviare richieste alla Sede<br>
   Dal Browser sede, clicca <i><b>approva</b></i> per dare l'ok alle singole richieste, rimuovendo così la richiesta
   dall'elenco per la sede e inviando una notifica di approvazione alla filiale
 </p>
@@ -34,7 +35,10 @@
     </li>
   </ul>
   <br>
-  <button *ngIf="role=='Filiale'" (click)="checkR()">richiedi approvazione</button>
+  <ng-container *ngIf="role=='Filiale'">
+    <button (click)="checkR(0)">richiedi approvazione Preventivo</button>
+    <button (click)="checkR(2)">richiedi approvazione Contratto</button>
+  </ng-container>
 </div>
 <hr>
 <button (click)="clear()">CLEAR</button>

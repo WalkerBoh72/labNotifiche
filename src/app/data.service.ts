@@ -21,7 +21,10 @@ export class DataService {
     notifiche: notifica[];
     error: PostgrestError | null;
   }> {
-    let query = this.supabase.from('notifiche').select('*').eq('id_type', type);
+    let query = this.supabase
+      .from('notifiche')
+      .select('*')
+      .in('id_type', type == 0 ? [0, 2] : [1, 3]);
 
     if (cdff) {
       query = query.eq('key2', cdff);
@@ -50,7 +53,7 @@ export class DataService {
 
     this.supabase
       .channel('notify')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifiche', filter: 'id_type=eq.1' }, payload => {
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifiche', filter: 'id_type=in.(1, 3)' }, payload => {
         changes.next(payload);
         console.log('Change received! Filiale', payload)
       })
@@ -64,7 +67,7 @@ export class DataService {
 
     this.supabase
       .channel('notify')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifiche', filter: 'id_type=eq.0' }, payload => {
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifiche', filter: 'id_type=in.(0, 2)' }, payload => {
         changes.next(payload);
         console.log('Change received! contratti', payload)
       })
@@ -102,7 +105,7 @@ export class DataService {
     const { data, error } = await this.supabase
       .from('notifiche')
       .delete()
-      .eq('id_type', 0)
+      .eq('id_type', notifica.id_type)
       .eq('key1', notifica.key1)
       .eq('key2', notifica.key2)
     if (error) {
