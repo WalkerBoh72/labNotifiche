@@ -3,13 +3,19 @@
 <button (click)="onSede()">Impersona Utente di Sede</button>
 <hr>
 
-<h3>Ruolo selezionato: <b>{{role}}</b></h3>
+<h3>Ruolo selezionato: <b>{{role}} ({{cdff}})</b>&nbsp;&nbsp;&nbsp;
+  <select *ngIf="role=='Filiale'" [(ngModel)]="cdff">
+    <option value="BER">BER</option>
+    <option value="DIR">DIR</option>
+  </select>`
+</h3>
 
 <div>
   <span *ngIf="role=='Filiale'">Approvati</span>
   <span *ngIf="role=='Sede'">Da Approvare</span>
   <ul *ngFor="let f of lista; let i = index;">
-    <li>{{f.messaggio}}- {{f.key1}}<button *ngIf="role=='Sede'" (click)="checkA(f.key1)">approva</button></li>
+    <li>{{f.messaggio}} ({{f.key2}}) - {{f.key1}}<button *ngIf="role=='Sede'" (click)="checkA(f)">approva</button>
+    </li>
   </ul>
   <br>
   <button *ngIf="role=='Filiale'" (click)="checkR()">richiedi approvazione</button>

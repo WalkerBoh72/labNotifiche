@@ -17,13 +17,17 @@ export class DataService {
   constructor() {
     this.supabase = createClient(supabaseInit.projectURL, supabaseInit.apiKey);
   }
-  async getNotificheP(type: number): Promise<{
+  async getNotificheP(type: number, cdff?: string): Promise<{
     notifiche: notifica[];
     error: PostgrestError | null;
   }> {
-    let { data: t, error } = await this.supabase.from('notifiche')
-      .select('*')
-      .eq('id_type', type);
+    let query = this.supabase.from('notifiche').select('*').eq('id_type', type);
+
+    if (cdff) {
+      query = query.eq('key2', cdff);
+    }
+
+    let { data: t, error } = await query;
 
     if (error) {
       throw error;
@@ -33,11 +37,11 @@ export class DataService {
     return { notifiche, error };
   }
 
-  getNotifiche(type: number): Observable<{
+  getNotifiche(type: number, cdff?: string): Observable<{
     notifiche: any[];
     error: PostgrestError | null;
   }> {
-    const observable$ = from(this.getNotificheP(type));
+    const observable$ = from(this.getNotificheP(type, cdff));
     return observable$
   }
 
@@ -100,6 +104,7 @@ export class DataService {
       .delete()
       .eq('id_type', 0)
       .eq('key1', notifica.key1)
+      .eq('key2', notifica.key2)
     if (error) {
       throw error;
     } else return true

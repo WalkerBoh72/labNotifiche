@@ -4,4 +4,5 @@ export interface notifica {
     status: number,
     username: string,
     key1: string | number
+    key2: string | number
 }

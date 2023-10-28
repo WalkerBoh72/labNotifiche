@@ -11,6 +11,7 @@ import { of, switchMap, tap } from 'rxjs';
 export class AppComponent {
   title = 'labNotifiche';
   role: 'Filiale' | 'Sede' | null = null;
+  cdff: string = '';
   counter: number = 1;
   lista: notifica[] = [];
 
@@ -24,7 +25,7 @@ export class AppComponent {
     this.getFiliale();
 
     this.service.getFilialeChanges().pipe(
-      switchMap(() => this.service.getNotifiche(1))
+      switchMap(() => this.service.getNotifiche(1, this.cdff))
     ).subscribe((res) => this.lista = res.notifiche);
   }
 
@@ -37,7 +38,7 @@ export class AppComponent {
     ).subscribe((res) => this.lista = res.notifiche);
   }
 
-  getFiliale() { this.service.getNotifiche(1).subscribe(res => this.lista = res.notifiche); }
+  getFiliale() { this.service.getNotifiche(1, this.cdff).subscribe(res => this.lista = res.notifiche); }
   getUC() { this.service.getNotifiche(0).subscribe(res => this.lista = res.notifiche); }
 
   checkR() {
@@ -46,19 +47,21 @@ export class AppComponent {
       messaggio: 'richiesta approvazione',
       status: 0,
       username: 'pippo',
-      key1: this.counter
+      key1: this.counter,
+      key2: this.cdff
     }
     this.service.insertNotifica(not).subscribe();
     this.counter += 1;
   }
 
-  checkA(id: string | number) {
+  checkA(n: notifica) {
     const not = {
       id_type: 1,
       messaggio: 'richiesta approvata',
       status: 0,
       username: 'paperino',
-      key1: id
+      key1: n.key1,
+      key2: n.key2
     }
     this.service.insertNotifica(not).subscribe()
     this.service.removeNotifica({ ...not, id_type: 0 })
