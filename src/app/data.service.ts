@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
   PostgrestError,
+  RealtimePostgresChangesPayload,
   SupabaseClient,
   createClient,
 } from '@supabase/supabase-js';
@@ -49,7 +50,7 @@ export class DataService {
   }
 
   getFilialeChanges() {
-    const changes = new Subject();
+    const changes = new Subject<RealtimePostgresChangesPayload<{ [key: string]: any; }>>();
 
     this.supabase
       .channel('notify')
@@ -63,7 +64,7 @@ export class DataService {
   }
 
   getUffContrChanges() {
-    const changes = new Subject();
+    const changes = new Subject<RealtimePostgresChangesPayload<{ [key: string]: any }>>();
 
     this.supabase
       .channel('notify')
@@ -78,7 +79,7 @@ export class DataService {
 
 
 
-  async insertNotificaP(notifica: notifica): Promise<notifica> {
+  async insertNotificaP(notifica: Partial<notifica>): Promise<notifica> {
     // update
     const { data, error } = await this.supabase
       .from('notifiche')
@@ -90,7 +91,7 @@ export class DataService {
 
   }
 
-  insertNotifica(notifica: notifica): Observable<notifica> {
+  insertNotifica(notifica: Partial<notifica>): Observable<notifica> {
     const observable$ = from(this.insertNotificaP(notifica));
     return observable$;
   }

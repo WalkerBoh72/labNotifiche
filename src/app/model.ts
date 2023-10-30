@@ -1,4 +1,6 @@
 export interface notifica {
+    id: number,
+    created_at: Date,
     id_type: number,
     messaggio: string,
     status: number,

@@ -24,9 +24,30 @@ export class AppComponent {
     this.role = 'Filiale';
     this.getFiliale();
 
-    this.service.getFilialeChanges().pipe(
+    this.service.getFilialeChanges()
+      .subscribe((payload) => {
+        const { eventType, schema, table, old: oldRecord, new: newRecord } = payload;
+        // Converti newRecord in un oggetto del tipo notifica
+        const newRec: notifica = newRecord as notifica;
+        const oldRec: notifica = oldRecord as notifica;
+        switch (eventType) {
+          case 'INSERT':
+            this.lista = [...this.lista, newRec]
+            break;
+          case 'UPDATE':
+            this.lista = this.lista.map(n => n.id == oldRec.id ? newRec : { ...n });
+            break;
+          case 'DELETE':
+            this.lista = this.lista.filter(n => n.id !== oldRec.id);
+            break;
+          default:
+            break;
+        }
+      });
+
+    /* this.service.getFilialeChanges().pipe(
       switchMap(() => this.service.getNotifiche(1, this.cdff))
-    ).subscribe((res) => this.lista = res.notifiche);
+    ).subscribe((res) => this.lista = res.notifiche); */
   }
 
   onSede() {
