@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { DataService } from './data.service';
 import { notifica } from './model';
-import { of, switchMap, tap } from 'rxjs';
+import { Observable, concatMap, map, mergeMap, of, startWith, switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -52,15 +52,23 @@ export class AppComponent {
 
   onSede() {
     this.role = 'Sede';
-    this.getUC();
+    this.getUC().subscribe(() => { });
 
-    this.service.getUffContrChanges().pipe(
+    /* this.service.getUffContrChanges().pipe(
       switchMap(() => this.service.getNotifiche(0))
-    ).subscribe((res) => this.lista = res.notifiche);
+    ).subscribe((res) => this.lista = res.notifiche); */
   }
 
   getFiliale() { this.service.getNotifiche(1, this.cdff).subscribe(res => this.lista = res.notifiche); }
-  getUC() { this.service.getNotifiche(0).subscribe(res => this.lista = res.notifiche); }
+  getUC(): Observable<void> {
+    return this.service.getUffContrChanges()
+      .pipe(
+        startWith(null),  // Emittiamo un valore nullo iniziale
+        switchMap(() => this.service.getNotifiche(0)),
+        tap(res => this.lista = res.notifiche),
+        map(() => { }),
+      );
+  }
 
   checkR(doc: number) {
     const not = {
